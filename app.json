@@ -11,10 +11,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F0ECE4"
       },
       "package": "com.magiccuts.app"
     },
@@ -30,6 +28,15 @@
           "cameraPermission": "Приложението използва камерата, за да снимаш желаната прическа.",
           "photosPermission": "Приложението използва снимките ти, за да прикачиш желаната прическа.",
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#F0ECE4"
         }
       ]
     ]
