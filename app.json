@@ -39,6 +39,12 @@
           "backgroundColor": "#F0ECE4"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d1b5884f-199a-4d7b-ac28-648330b87220"
+      }
+    },
+    "owner": "simeon_enev"
   }
 }
