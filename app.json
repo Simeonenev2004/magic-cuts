@@ -22,7 +22,16 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Приложението използва камерата, за да снимаш желаната прическа.",
+          "photosPermission": "Приложението използва снимките ти, за да прикачиш желаната прическа.",
+          "microphonePermission": false
+        }
+      ]
     ]
   }
 }
