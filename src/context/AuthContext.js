@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
           setProfile({ name: data.name, phone: data.phone, email: data.email });
         }
       } catch (error) {
-        console.log('Could not load profile', error);
+        // without the profile the screens fall back to the data from the auth user
       }
     });
 

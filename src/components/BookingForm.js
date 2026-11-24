@@ -69,6 +69,9 @@ export default function BookingForm({
   const dateString = date ? formatDate(date) : '';
   const isDayOff = barber && date ? barber.daysOff.includes(date.getDay()) : false;
 
+  // a day off is shown right away, the other date errors after the first attempt
+  const dateError = isDayOff ? validateBookingDate(date, barber) : errors.date;
+
   // when editing, the slots of this booking count as free
   const takenTimes = takenSlots
     .filter((slot) => !booking || slot.bookingId !== booking.id)
@@ -268,7 +271,7 @@ export default function BookingForm({
           label="Дата"
           value={date}
           onChange={handleDateChange}
-          error={errors.date}
+          error={dateError}
           minimumDate={today}
           maximumDate={maxDate}
         />

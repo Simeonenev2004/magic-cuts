@@ -4,11 +4,6 @@ import { colors } from './colors';
 export const titleFont = 'Comfortaa_700Bold';
 
 export const common = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: 20,
-  },
   title: {
     fontFamily: titleFont,
     fontSize: 24,
@@ -35,11 +30,6 @@ export const common = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  text: {
-    fontSize: 16,
-    color: colors.text,
-    marginBottom: 8,
   },
   link: {
     fontSize: 15,
