@@ -40,3 +40,7 @@ yarn-error.*
 /ios
 /android
 
+
+# firebase admin key
+*firebase-adminsdk*.json
+serviceAccountKey*.json
