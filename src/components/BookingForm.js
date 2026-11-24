@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,12 +13,14 @@ import {
   View,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
 import DateField from './DateField';
 import FormInput from './FormInput';
 import PrimaryButton from './PrimaryButton';
 import { getTakenSlots } from '../api/bookingsApi';
 import { colors } from '../theme/colors';
 import { formatDate, parseDate } from '../utils/dates';
+import { pickPhoto, takePhoto } from '../utils/photo';
 import { generateSlots, getAvailableTimes } from '../utils/slots';
 import {
   validateBarber,
@@ -45,6 +49,8 @@ export default function BookingForm({
   const [phone, setPhone] = useState(booking ? booking.userPhone : defaultPhone || '');
   const [note, setNote] = useState(booking ? booking.note : '');
   const [firstVisit, setFirstVisit] = useState(booking ? booking.firstVisit : false);
+  const [photo, setPhoto] = useState(booking ? booking.photo : null);
+  const [photoLoading, setPhotoLoading] = useState(false);
 
   const [takenSlots, setTakenSlots] = useState([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
@@ -133,6 +139,20 @@ export default function BookingForm({
     updateError('note', validateNote(value));
   };
 
+  // getPhoto is takePhoto or pickPhoto
+  const handleAddPhoto = async (getPhoto) => {
+    setPhotoLoading(true);
+    try {
+      const result = await getPhoto();
+      if (result) {
+        setPhoto(result);
+      }
+    } catch (error) {
+      Alert.alert('Снимка', 'Неуспешно зареждане на снимката.');
+    }
+    setPhotoLoading(false);
+  };
+
   const handleSubmit = async () => {
     const newErrors = {
       barber: validateBarber(barberId),
@@ -159,6 +179,7 @@ export default function BookingForm({
         phone: phone.replace(/\s/g, ''),
         note: note.trim(),
         firstVisit,
+        photo,
       });
     } catch (error) {
       if (error.code === 'slot-taken') {
@@ -287,6 +308,31 @@ export default function BookingForm({
           />
         </View>
 
+        <Text style={styles.label}>Снимка на желаната прическа (по желание)</Text>
+        {photo ? (
+          <View style={styles.photoBox}>
+            <Image source={{ uri: photo }} style={styles.photo} resizeMode="cover" />
+            <TouchableOpacity onPress={() => setPhoto(null)}>
+              <Text style={styles.removePhoto}>Премахни</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+        {photoLoading ? (
+          <ActivityIndicator style={styles.slotsLoading} color={colors.primary} />
+        ) : (
+          <View style={styles.photoButtons}>
+            <TouchableOpacity style={styles.photoButton} onPress={() => handleAddPhoto(takePhoto)}>
+              <Ionicons name="camera-outline" size={20} color={colors.primary} />
+              <Text style={styles.photoButtonText}>Снимай</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.photoButton} onPress={() => handleAddPhoto(pickPhoto)}>
+              <Ionicons name="image-outline" size={20} color={colors.primary} />
+              <Text style={styles.photoButtonText}>От галерията</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.space} />
+
         {submitError ? <Text style={styles.submitError}>{submitError}</Text> : null}
 
         <PrimaryButton title={submitTitle} onPress={handleSubmit} loading={loading} />
@@ -389,6 +435,39 @@ const styles = StyleSheet.create({
   switchText: {
     fontSize: 16,
     color: colors.text,
+  },
+  photoBox: {
+    marginBottom: 10,
+  },
+  photo: {
+    width: '100%',
+    height: 220,
+    borderRadius: 10,
+  },
+  removePhoto: {
+    fontSize: 15,
+    color: colors.error,
+    textAlign: 'right',
+    marginTop: 6,
+  },
+  photoButtons: {
+    flexDirection: 'row',
+  },
+  photoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginRight: 10,
+  },
+  photoButtonText: {
+    fontSize: 15,
+    color: colors.text,
+    marginLeft: 6,
   },
   submitError: {
     color: colors.error,

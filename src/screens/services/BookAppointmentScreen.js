@@ -53,7 +53,7 @@ export default function BookAppointmentScreen({ navigation, route }) {
       time: values.time,
       note: values.note,
       firstVisit: values.firstVisit,
-      photo: null,
+      photo: values.photo,
     });
 
     Alert.alert(
