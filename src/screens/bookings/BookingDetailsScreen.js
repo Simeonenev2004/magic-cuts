@@ -1,12 +1,22 @@
 import { useCallback, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import ErrorView from '../../components/ErrorView';
 import LoadingView from '../../components/LoadingView';
-import { getBookingById } from '../../api/bookingsApi';
+import PrimaryButton from '../../components/PrimaryButton';
+import { deleteBooking, getBookingById } from '../../api/bookingsApi';
 import { colors } from '../../theme/colors';
 import { common } from '../../theme/common';
-import { formatDateText, parseDate } from '../../utils/dates';
+import { formatDateText, isPastBooking, parseDate } from '../../utils/dates';
 
 function InfoRow({ label, value }) {
   return (
@@ -23,6 +33,7 @@ export default function BookingDetailsScreen({ navigation, route }) {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadBooking = async () => {
     try {
@@ -45,6 +56,24 @@ export default function BookingDetailsScreen({ navigation, route }) {
   const handleRetry = () => {
     setLoading(true);
     loadBooking();
+  };
+
+  const cancelBooking = async () => {
+    setDeleting(true);
+    try {
+      await deleteBooking(booking);
+      navigation.popToTop();
+    } catch (err) {
+      setDeleting(false);
+      Alert.alert('Грешка', 'Часът не беше отказан. Опитай отново.');
+    }
+  };
+
+  const handleCancel = () => {
+    Alert.alert('Отказ на час', 'Сигурен ли си, че искаш да откажеш този час?', [
+      { text: 'Не', style: 'cancel' },
+      { text: 'Да, откажи', style: 'destructive', onPress: cancelBooking },
+    ]);
   };
 
   if (loading) {
@@ -76,6 +105,23 @@ export default function BookingDetailsScreen({ navigation, route }) {
           <Image source={{ uri: booking.photo }} style={styles.photo} resizeMode="cover" />
         </View>
       ) : null}
+
+      {!isPastBooking(booking) ? (
+        <View>
+          <PrimaryButton
+            title="Пренасрочи"
+            onPress={() => navigation.navigate('EditBooking', { bookingId })}
+            disabled={deleting}
+          />
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} disabled={deleting}>
+            {deleting ? (
+              <ActivityIndicator color={colors.error} />
+            ) : (
+              <Text style={styles.cancelText}>Откажи часа</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -103,6 +149,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.text,
     textAlign: 'right',
+  },
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: colors.error,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  cancelText: {
+    color: colors.error,
+    fontSize: 16,
+    fontWeight: '600',
   },
   photoLabel: {
     fontSize: 14,
