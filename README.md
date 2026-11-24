@@ -6,7 +6,7 @@ The app interface is in Bulgarian, because it is made for a real local barbersho
 
 ## Download APK
 
-**Download the Android APK:** coming soon
+**[Download the Android APK](https://github.com/Simeonenev2004/magic-cuts/releases/download/v1.0.0/magic-cuts.apk)**
 
 ## How to run the project
 
